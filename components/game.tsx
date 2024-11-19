@@ -86,26 +86,27 @@ export default function Game() {
       }
     }
 
-    // Check diagonals
-    const diag1 = (grid[0][0] || ' ') + (grid[1][1] || ' ') + (grid[2][2] || ' ') + (grid[3][3] || ' ')
-    const diag2 = (grid[0][3] || ' ') + (grid[1][2] || ' ') + (grid[2][1] || ' ') + (grid[3][0] || ' ')
+    // Check all diagonals
+    const diagonals = [
+      // [[0, 0], [1, 1], [2, 2], [3, 3]],
+      [[0, 3], [1, 2], [2, 1], [3, 0]],
+      [[0, 2], [1, 1], [2, 0]],
+      [[1, 3], [2, 2], [3, 1]],
+      [[1, 0], [2, 1], [3, 2]],
+      [[0, 1], [1, 2], [2, 3]],
+    ]
 
-    if (diag1.includes('FOX')) {
-      const startIdx = diag1.indexOf('FOX')
-      foxPositions.push([startIdx, startIdx], [startIdx + 1, startIdx + 1], [startIdx + 2, startIdx + 2])
-    }
-    if (hardMode && diag1.includes('XOF')) {
-      const startIdx = diag1.indexOf('XOF')
-      foxPositions.push([startIdx + 2, startIdx + 2], [startIdx + 1, startIdx + 1], [startIdx, startIdx])
-    }
-    if (diag2.includes('FOX')) {
-      const startIdx = diag2.indexOf('FOX')
-      foxPositions.push([startIdx, 3 - startIdx], [startIdx + 1, 2 - startIdx], [startIdx + 2, 1 - startIdx])
-    }
-    if (hardMode && diag2.includes('XOF')) {
-      const startIdx = diag2.indexOf('XOF')
-      foxPositions.push([startIdx + 2, 1 - startIdx], [startIdx + 1, 2 - startIdx], [startIdx, 3 - startIdx])
-    }
+    diagonals.forEach(diag => {
+      const diagStr = diag.map(([x, y]) => grid[x][y] || ' ').join('')
+      if (diagStr.includes('FOX')) {
+        const startIdx = diagStr.indexOf('FOX')
+        foxPositions.push(diag[startIdx] as [number, number], diag[startIdx + 1] as [number, number], diag[startIdx + 2] as [number, number])
+      }
+      if (diagStr.includes('XOF')) {
+        const startIdx = diagStr.indexOf('XOF')
+        foxPositions.push(diag[startIdx + 2] as [number, number], diag[startIdx + 1] as [number, number], diag[startIdx] as [number, number])
+      }
+    })
 
     return foxPositions
   }
