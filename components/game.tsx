@@ -67,8 +67,8 @@ export default function Game() {
 
     // Check horizontally and vertically
     for (let i = 0; i < 4; i++) {
-      const rowStr = grid[i].join('')
-      const colStr = grid.map(row => row[i]).join('')
+      const rowStr = grid[i].map(cell => cell || ' ').join('')
+      const colStr = grid.map(row => row[i] || ' ').join('')
 
       if (rowStr.includes('FOX')) {
         const startIdx = rowStr.indexOf('FOX')
@@ -81,8 +81,8 @@ export default function Game() {
     }
 
     // Check diagonals
-    const diag1 = grid[0][0] + grid[1][1] + grid[2][2] + grid[3][3]
-    const diag2 = grid[0][3] + grid[1][2] + grid[2][1] + grid[3][0]
+    const diag1 = (grid[0][0] || ' ') + (grid[1][1] || ' ') + (grid[2][2] || ' ') + (grid[3][3] || ' ')
+    const diag2 = (grid[0][3] || ' ') + (grid[1][2] || ' ') + (grid[2][1] || ' ') + (grid[3][0] || ' ')
 
     if (diag1.includes('FOX')) {
       const startIdx = diag1.indexOf('FOX')
@@ -97,16 +97,16 @@ export default function Game() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-amber-100 p-4">
       <Card className="p-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-4 text-center">Do NOT find the Fox</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center text-amber-900">Do <span className="underline">NOT</span> Find The Fox 🦊</h1>
         <div className="grid grid-cols-4 gap-2 mb-4">
           {grid.map((row, i) => 
             row.map((cell, j) => (
               <Button
                 key={`${i}-${j}`}
                 onClick={() => placeTile(i, j)}
-                className={`w-16 h-16 text-xl font-bold hover:bg-blue-100 transition-colors duration-200 ${foxTiles.some(([x, y]) => x === i && y === j) ? 'bg-red-500' : ''}`}
+                className={`w-16 h-16 text-xl font-bold hover:bg-amber-100 transition-colors duration-200 ${foxTiles.some(([x, y]) => x === i && y === j) ? 'bg-red-500' : 'bg-amber-50'}`}
                 variant={cell ? "secondary" : "outline"}
                 disabled={cell !== '' || gameStatus !== 'playing'}
               >
@@ -120,7 +120,7 @@ export default function Game() {
             <Button
               key={index}
               onClick={() => setSelectedTileIndex(index)}
-              className={`w-12 h-12 text-xl font-bold hover:bg-blue-100 transition-colors duration-200 ${selectedTileIndex === index ? 'bg-blue-300' : ''}`}
+              className={`w-12 h-12 text-xl font-bold hover:bg-amber-100 transition-colors duration-200 ${selectedTileIndex === index ? 'bg-amber-300' : 'bg-amber-50'}`}
               variant="outline"
               disabled={gameStatus !== 'playing'}
             >
@@ -128,28 +128,28 @@ export default function Game() {
             </Button>
           ))}
         </div>
-        <div className="text-center text-lg font-semibold mb-4">
+        <div className="text-center text-lg font-semibold mb-4 text-amber-900">
           {gameStatus === 'playing' && `Select a tile and place it on the grid. Avoid spelling "FOX"!`}
           {gameStatus === 'won' && 'Congratulations! You avoided spelling "FOX"!'}
           {gameStatus === 'lost' && 'Oh no! You spelled "FOX" and lost the game.'}
         </div>
-        <div className="text-center text-xl font-bold mb-4">
+        <div className="text-center text-xl font-bold mb-4 text-amber-900">
           {gameStatus === 'won' && 'You won!'}
           {gameStatus === 'lost' && 'You lost!'}
         </div>
-        <div className="text-center text-lg font-semibold mb-4">
+        <div className="text-center text-lg font-semibold mb-4 text-amber-900">
             Attempts: {failAttempts}
         </div>
-        <Button onClick={resetGame} className="w-full transition-colors duration-200">
+        <Button onClick={resetGame} className="w-full transition-colors duration-200 bg-amber-600 hover:bg-amber-700 text-white">
           Reset Game
         </Button>
       </Card>
       <footer className="mt-4 text-center">
-        <p className="text-sm text-gray-500 mt-2">
-          Inspired by <a href="https://donotfindthefox.com" className="text-blue-500 hover:underline">Do Not Find The Fox</a>
+        <p className="text-sm text-amber-700 mt-2">
+          Inspired by <a href="https://donotfindthefox.com" className="text-amber-800 hover:underline">Do Not Find The Fox</a>
         </p>
-        <p className="text-sm text-gray-500 mt-2">
-          Created by <a href="https://ishan.page" className="text-blue-500 hover:underline">Ishan</a>
+        <p className="text-sm text-amber-700 mt-2">
+          Created by <a href="https://ishan.page" className="text-amber-800 hover:underline">Ishan</a>
         </p>
       </footer>
     </div>
