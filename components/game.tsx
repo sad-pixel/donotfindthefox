@@ -12,10 +12,6 @@ export default function Game() {
   const [foxTiles, setFoxTiles] = useState<[number, number][]>([])
   const [failAttempts, setFailAttempts] = useState<number>(0)
 
-  useEffect(() => {
-    resetGame()
-  }, [])
-
   const resetGame = () => {
     // Initialize grid with diagonal 'O's
     const newGrid = Array.from({ length: 4 }, (_, i) => 
@@ -33,7 +29,11 @@ export default function Game() {
     setFoxTiles([])
   }
 
-  const shuffleArray = (array: any[]) => {
+  useEffect(() => {
+    resetGame()
+  }, [resetGame])
+
+  const shuffleArray = (array: string[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
       ;[array[i], array[j]] = [array[j], array[i]]
