@@ -4,14 +4,27 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Switch } from './ui/switch'
+import { Badge } from './ui/badge'
 
 export default function Game() {
   const [grid, setGrid] = useState<string[][]>([])
   const [remainingTiles, setRemainingTiles] = useState<string[]>([])
   const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'lost'>('playing')
   const [foxTiles, setFoxTiles] = useState<[number, number][]>([])
-  const [failAttempts, setFailAttempts] = useState<number>(0)
   const [hardMode, setHardMode] = useState<boolean>(false)
+  const [totalAttempts, setTotalAttempts] = useState<number>(0)
+  const [totalWins, setTotalWins] = useState<number>(0)
+  const [totalLosses, setTotalLosses] = useState<number>(0)
+
+  useEffect(() => {
+    const storedTotalAttempts = parseInt(localStorage.getItem('totalAttempts') || '0')
+    const storedTotalWins = parseInt(localStorage.getItem('totalWins') || '0')
+    const storedTotalLosses = parseInt(localStorage.getItem('totalLosses') || '0')
+
+    setTotalAttempts(storedTotalAttempts)
+    setTotalWins(storedTotalWins)
+    setTotalLosses(storedTotalLosses)
+  }, [])
 
   const resetGame = () => {
     // Initialize grid with diagonal 'O's
@@ -53,10 +66,27 @@ export default function Game() {
       if (foxPositions.length > 0) {
         setGameStatus('lost')
         setFoxTiles(foxPositions)
-        setFailAttempts(failAttempts + 1)
+        updateStats('loss')
       } else if (newRemainingTiles.length === 0) {
         setGameStatus('won')
+        updateStats('win')
       }
+    }
+  }
+
+  const updateStats = (result: 'win' | 'loss') => {
+    const newTotalAttempts = totalAttempts + 1
+    setTotalAttempts(newTotalAttempts)
+    localStorage.setItem('totalAttempts', newTotalAttempts.toString())
+
+    if (result === 'win') {
+      const newTotalWins = totalWins + 1
+      setTotalWins(newTotalWins)
+      localStorage.setItem('totalWins', newTotalWins.toString())
+    } else {
+      const newTotalLosses = totalLosses + 1
+      setTotalLosses(newTotalLosses)
+      localStorage.setItem('totalLosses', newTotalLosses.toString())
     }
   }
 
@@ -164,8 +194,16 @@ export default function Game() {
           {gameStatus === 'won' && 'Congratulations! You avoided spelling "FOX"!'}
           {gameStatus === 'lost' && 'Oh no! You spelled "FOX" and lost the game.'}
         </div>
-        <div className="text-center text-lg font-semibold mb-4 text-amber-900">
-            Attempts: {failAttempts}
+        <div className="flex justify-center space-x-4 mb-4">
+            <Badge variant="secondary" className="text-amber-900 bg-amber-100 hover:bg-amber-50">
+                {totalAttempts === 0 ? 'No Attempts' : totalAttempts === 1 ? '1 Attempt' : `${totalAttempts} Attempts`}
+            </Badge>
+            <Badge variant="secondary" className="text-amber-900 bg-green-100 hover:bg-green-50">
+                {totalWins === 0 ? 'No Wins' : totalWins === 1 ? '1 Win' : `${totalWins} Wins`}
+            </Badge>
+            <Badge variant="secondary" className="text-amber-900 bg-red-100 hover:bg-red-50">
+                {totalLosses === 0 ? 'No Losses' : totalLosses === 1 ? '1 Loss' : `${totalLosses} Losses`}
+            </Badge>
         </div>
         <div className="w-full my-2 flex items-center">
             <form>
