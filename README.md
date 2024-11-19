@@ -2,6 +2,8 @@
 
 A fun and challenging game where the objective is to avoid spelling "FOX" on the grid. This project is inspired by the game [Do Not Find The Fox](https://donotfindthefox.com).
 
+[Try it out](https://donotfindthefox.pages.dev)
+
 ## Table of Contents
 
 - [Installation](#installation)
@@ -16,7 +18,7 @@ To run this project locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/donotfindthefox.git
+   git clone https://github.com/sad-pixel/donotfindthefox.git
    ```
 2. Navigate to the project directory:
    ```bash

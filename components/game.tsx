@@ -127,8 +127,8 @@ export default function Game() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-amber-100 p-4">
-      <Card className="p-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-4 text-center text-amber-900">Do <span className="underline">NOT</span> Find The Fox 🦊</h1>
+        <h1 className="text-3xl font-bold mb-4 text-center text-amber-900">Do <span className="underline">NOT</span> Find The Fox! 🦊</h1>
+      <Card className="p-6 bg-white rounded-lg shadow-lg w-96">
         <div className="grid grid-cols-4 gap-2 mb-4">
           {grid.map((row, i) => 
             row.map((cell, j) => (
@@ -145,17 +145,17 @@ export default function Game() {
             ))
           )}
         </div>
-        <div className="grid grid-cols-6 gap-2 mb-4">
+        <div className="grid grid-cols-6 gap-4 mb-6 h-36 border-2 pr-4 border-dashed border-amber-500 rounded-lg p-2 shadow-inner">
           {remainingTiles.map((tile, index) => (
             <Button
               key={index}
               draggable
               onDragStart={(e) => handleDragStart(e, index)}
-              className={`w-12 h-12 text-xl font-bold hover:bg-amber-100 transition-colors duration-200 bg-amber-50`}
+              className={`w-12 h-12 text-xl font-bold hover:bg-amber-50 transition-colors duration-200 bg-amber-100`}
               variant="outline"
               disabled={gameStatus !== 'playing'}
             >
-              ?
+              {gameStatus === 'lost' ? tile : '?'}
             </Button>
           ))}
         </div>
@@ -163,10 +163,6 @@ export default function Game() {
           {gameStatus === 'playing' && `Drag a tile and drop it on the grid. Avoid spelling "FOX"!`}
           {gameStatus === 'won' && 'Congratulations! You avoided spelling "FOX"!'}
           {gameStatus === 'lost' && 'Oh no! You spelled "FOX" and lost the game.'}
-        </div>
-        <div className="text-center text-xl font-bold mb-4 text-amber-900">
-          {gameStatus === 'won' && 'You won!'}
-          {gameStatus === 'lost' && 'You lost!'}
         </div>
         <div className="text-center text-lg font-semibold mb-4 text-amber-900">
             Attempts: {failAttempts}
@@ -184,7 +180,9 @@ export default function Game() {
         </div>
 
         <Button onClick={resetGame} className="w-full transition-colors duration-200 bg-amber-600 hover:bg-amber-700 text-white">
-          Reset Game
+        {gameStatus === 'playing' && 'Reset Game'}
+        {gameStatus === 'won' && 'Play Again?'}
+        {gameStatus === 'lost' && 'Try Again?'}
         </Button>
 
       </Card>
