@@ -29,9 +29,7 @@ export default function Game() {
     setFoxTiles([])
   }
 
-  useEffect(() => {
-    resetGame()
-  }, [resetGame])
+  useEffect(resetGame, [])
 
   const shuffleArray = (array: string[]) => {
     for (let i = array.length - 1; i > 0; i--) {
