@@ -9,7 +9,6 @@ export default function Game() {
   const [grid, setGrid] = useState<string[][]>([])
   const [remainingTiles, setRemainingTiles] = useState<string[]>([])
   const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'lost'>('playing')
-  const [selectedTileIndex, setSelectedTileIndex] = useState<number | null>(null)
   const [foxTiles, setFoxTiles] = useState<[number, number][]>([])
   const [failAttempts, setFailAttempts] = useState<number>(0)
   const [hardMode, setHardMode] = useState<boolean>(false)
@@ -27,7 +26,6 @@ export default function Game() {
     setRemainingTiles(tiles)
 
     setGameStatus('playing')
-    setSelectedTileIndex(null)
     setFoxTiles([])
   }
 
@@ -40,18 +38,16 @@ export default function Game() {
     }
   }
 
-  const placeTile = (row: number, col: number) => {
-    if (grid[row][col] === '' && gameStatus === 'playing' && selectedTileIndex !== null) {
-      const selectedTile = remainingTiles[selectedTileIndex]
+  const placeTile = (row: number, col: number, tileId: number) => {
+    if (grid[row][col] === '' && gameStatus === 'playing') {
+      const tile = remainingTiles[tileId]
       const newGrid = grid.map((r, i) => 
-        r.map((c, j) => (i === row && j === col ? selectedTile : c))
+        r.map((c, j) => (i === row && j === col ? tile : c))
       )
       setGrid(newGrid)
 
-      const newRemainingTiles = remainingTiles.filter((_, index) => index !== selectedTileIndex)
+      const newRemainingTiles = remainingTiles.filter((_, index) => index !== tileId)
       setRemainingTiles(newRemainingTiles)
-
-      setSelectedTileIndex(null)
 
       const foxPositions = checkForFox(newGrid)
       if (foxPositions.length > 0) {
@@ -114,6 +110,20 @@ export default function Game() {
     return foxPositions
   }
 
+  const handleDragStart = (event: React.DragEvent, tileId: number) => {
+    event.dataTransfer.setData('text/plain', tileId.toString())
+  }
+
+  const handleDrop = (event: React.DragEvent, row: number, col: number) => {
+    event.preventDefault()
+    const tileId = parseInt(event.dataTransfer.getData('text/plain'), 10)
+    placeTile(row, col, tileId)
+  }
+
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault()
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-amber-100 p-4">
       <Card className="p-6 bg-white rounded-lg shadow-lg">
@@ -123,7 +133,8 @@ export default function Game() {
             row.map((cell, j) => (
               <Button
                 key={`${i}-${j}`}
-                onClick={() => placeTile(i, j)}
+                onDrop={(e) => handleDrop(e, i, j)}
+                onDragOver={handleDragOver}
                 className={`w-16 h-16 text-xl font-bold hover:bg-amber-100 transition-colors duration-200 ${foxTiles.some(([x, y]) => x === i && y === j) ? 'bg-red-500' : 'bg-amber-50'}`}
                 variant={cell ? "secondary" : "outline"}
                 disabled={cell !== '' || gameStatus !== 'playing'}
@@ -137,8 +148,9 @@ export default function Game() {
           {remainingTiles.map((tile, index) => (
             <Button
               key={index}
-              onClick={() => setSelectedTileIndex(index)}
-              className={`w-12 h-12 text-xl font-bold hover:bg-amber-100 transition-colors duration-200 ${selectedTileIndex === index ? 'bg-amber-300' : 'bg-amber-50'}`}
+              draggable
+              onDragStart={(e) => handleDragStart(e, index)}
+              className={`w-12 h-12 text-xl font-bold hover:bg-amber-100 transition-colors duration-200 bg-amber-50`}
               variant="outline"
               disabled={gameStatus !== 'playing'}
             >
@@ -147,7 +159,7 @@ export default function Game() {
           ))}
         </div>
         <div className="text-center text-lg font-semibold mb-4 text-amber-900">
-          {gameStatus === 'playing' && `Select a tile and place it on the grid. Avoid spelling "FOX"!`}
+          {gameStatus === 'playing' && `Drag a tile and drop it on the grid. Avoid spelling "FOX"!`}
           {gameStatus === 'won' && 'Congratulations! You avoided spelling "FOX"!'}
           {gameStatus === 'lost' && 'Oh no! You spelled "FOX" and lost the game.'}
         </div>
