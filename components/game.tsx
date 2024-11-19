@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Switch } from './ui/switch'
 
 export default function Game() {
   const [grid, setGrid] = useState<string[][]>([])
@@ -11,6 +12,7 @@ export default function Game() {
   const [selectedTileIndex, setSelectedTileIndex] = useState<number | null>(null)
   const [foxTiles, setFoxTiles] = useState<[number, number][]>([])
   const [failAttempts, setFailAttempts] = useState<number>(0)
+  const [hardMode, setHardMode] = useState<boolean>(false)
 
   const resetGame = () => {
     // Initialize grid with diagonal 'O's
@@ -74,9 +76,17 @@ export default function Game() {
         const startIdx = rowStr.indexOf('FOX')
         foxPositions.push([i, startIdx], [i, startIdx + 1], [i, startIdx + 2])
       }
+      if (hardMode && rowStr.includes('XOF')) {
+        const startIdx = rowStr.indexOf('XOF')
+        foxPositions.push([i, startIdx + 2], [i, startIdx + 1], [i, startIdx])
+      }
       if (colStr.includes('FOX')) {
         const startIdx = colStr.indexOf('FOX')
         foxPositions.push([startIdx, i], [startIdx + 1, i], [startIdx + 2, i])
+      }
+      if (hardMode && colStr.includes('XOF')) {
+        const startIdx = colStr.indexOf('XOF')
+        foxPositions.push([startIdx + 2, i], [startIdx + 1, i], [startIdx, i])
       }
     }
 
@@ -88,9 +98,17 @@ export default function Game() {
       const startIdx = diag1.indexOf('FOX')
       foxPositions.push([startIdx, startIdx], [startIdx + 1, startIdx + 1], [startIdx + 2, startIdx + 2])
     }
+    if (hardMode && diag1.includes('XOF')) {
+      const startIdx = diag1.indexOf('XOF')
+      foxPositions.push([startIdx + 2, startIdx + 2], [startIdx + 1, startIdx + 1], [startIdx, startIdx])
+    }
     if (diag2.includes('FOX')) {
       const startIdx = diag2.indexOf('FOX')
       foxPositions.push([startIdx, 3 - startIdx], [startIdx + 1, 2 - startIdx], [startIdx + 2, 1 - startIdx])
+    }
+    if (hardMode && diag2.includes('XOF')) {
+      const startIdx = diag2.indexOf('XOF')
+      foxPositions.push([startIdx + 2, 1 - startIdx], [startIdx + 1, 2 - startIdx], [startIdx, 3 - startIdx])
     }
 
     return foxPositions
@@ -140,9 +158,22 @@ export default function Game() {
         <div className="text-center text-lg font-semibold mb-4 text-amber-900">
             Attempts: {failAttempts}
         </div>
+        <div className="w-full my-2 flex items-center">
+            <form>
+            <Switch
+                checked={hardMode}
+                onCheckedChange={() => setHardMode(!hardMode)}
+                className="data-[state=checked]:bg-amber-600"
+            />
+
+            </form>
+          <span className="ml-3 text-amber-900 font-semibold">Hard Mode</span>
+        </div>
+
         <Button onClick={resetGame} className="w-full transition-colors duration-200 bg-amber-600 hover:bg-amber-700 text-white">
           Reset Game
         </Button>
+
       </Card>
       <footer className="mt-4 text-center">
         <p className="text-sm text-amber-700 mt-2">
